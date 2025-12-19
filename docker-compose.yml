@@ -1,0 +1,96 @@
+version: '3.9'
+
+networks:
+  microservices:
+    driver: bridge
+
+services:
+  product-service-postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5433:5432"
+    networks:
+      - microservices
+    volumes:
+      - product_pgdata:/var/lib/postgresql/data/pgdata
+    healthcheck:
+      test: /usr/bin/pg_isready --username=postgres
+      interval: 5s
+      timeout: 15s
+      retries: 3
+
+  product-service:
+    build:
+      context: ../product-service
+    command: uvicorn src.product_service.main:application --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ../product-service/src:/product-service/src
+    networks:
+      - microservices
+    depends_on:
+      product-service-postgres:
+        condition: service_healthy
+    env_file:
+      - ../product-service/.env
+
+  order-service-postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5434:5432"
+    networks:
+      - microservices
+    volumes:
+      - order_pgdata:/var/lib/postgresql/data/pgdata
+    healthcheck:
+      test: /usr/bin/pg_isready --username=postgres
+      interval: 5s
+      timeout: 15s
+      retries: 3
+
+  order-service:
+    build:
+      context: ../order-service
+    command: uvicorn src.order_service.main:application --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ../order-service/src:/order-service/src
+    networks:
+      - microservices
+    depends_on:
+      order-service-postgres:
+        condition: service_healthy
+    env_file:
+      - ../order-service/.env
+
+  gateway-service:
+    build:
+      context: ../gateway-service
+    command: uvicorn src.gateway_service.main:application --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ../gateway-service/src:/gateway-service/src
+    depends_on:
+      - product-service
+      - order-service
+    ports:
+      - "8000:8000"
+    networks:
+      - microservices
+    env_file:
+      - ../gateway-service/.env
+
+volumes:
+  product_pgdata:
+    external: true
+  order_pgdata:
+    external: true
