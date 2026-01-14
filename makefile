@@ -15,7 +15,7 @@ fetch-services:
 	@for service in $(SERVICES); do \
 		if [ ! -d "../$$service" ]; then \
 			echo "Cloning $$service..."; \
-			git clone $${service}_REPO ../$$service; \
+			git clone $${service^^}_REPO ../$$service; \
 		else \
 			echo "$$service already exists, skipping..."; \
 		fi \
