@@ -14,19 +14,41 @@ fetch-services:
 	@echo "Fetching all microservices..."
 	@for service in $(SERVICES); do \
 		if [ ! -d "../$$service" ]; then \
+			case "$$service" in \
+				product-service) url=$(PRODUCT_SERVICE_REPO) ;; \
+				order-service) url=$(ORDER_SERVICE_REPO) ;; \
+				payment-service) url=$(PAYMENT_SERVICE_REPO) ;; \
+				auth-service) url=$(AUTH_SERVICE_REPO) ;; \
+				gateway-service) url=$(GATEWAY_SERVICE_REPO) ;; \
+			esac; \
 			echo "Cloning $$service..."; \
-			git clone $${service^^}_REPO ../$$service; \
+			git clone $$url ../$$service; \
 		else \
 			echo "$$service already exists, skipping..."; \
 		fi \
 	done
 
-build: init-volumes
+build: init-volumes init-env
 	$(COMPOSE_CMD) -f docker-compose.yml build
 
 init-volumes:
 	@for v in product_pgdata order_pgdata payment_pgdata auth_pgdata; do \
 		docker volume create $$v || true; \
+	done
+
+init-env:
+	@for service in $(SERVICES); do \
+		if [ ! -f ../$$service/.env ]; then \
+			if [ -f ../$$service/.env.example ]; then \
+				echo "Copying .env.example to .env for $$service..."; \
+				cp ../$$service/.env.example ../$$service/.env; \
+			else \
+				echo "Creating empty .env for $$service..."; \
+				touch ../$$service/.env; \
+			fi \
+		else \
+			echo ".env already exists for $$service, skipping..."; \
+		fi \
 	done
 
 run:

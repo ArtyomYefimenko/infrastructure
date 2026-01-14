@@ -51,7 +51,7 @@ services:
   product-service:
     build:
       context: ../product-service
-    command: uvicorn src.product_service.main:application --host 0.0.0.0 --port 8000 --reload
+    command: sh -c "poetry run alembic upgrade head && uvicorn src.product_service.main:application --host 0.0.0.0 --port 8000 --reload"
     volumes:
       - ../product-service/src:/product-service/src
     networks:
@@ -85,7 +85,7 @@ services:
   order-service:
     build:
       context: ../order-service
-    command: uvicorn src.order_service.main:application --host 0.0.0.0 --port 8000 --reload
+    command: sh -c "poetry run alembic upgrade head && uvicorn src.order_service.main:application --host 0.0.0.0 --port 8000 --reload"
     volumes:
       - ../order-service/src:/order-service/src
     networks:
@@ -121,7 +121,7 @@ services:
   payment-service:
     build:
       context: ../payment-service
-    command: uvicorn src.payment_service.main:application --host 0.0.0.0 --port 8000 --reload
+    command: sh -c "poetry run alembic upgrade head && uvicorn src.payment_service.main:application --host 0.0.0.0 --port 8000 --reload"
     volumes:
       - ../payment-service/src:/payment-service/src
     networks:
@@ -157,7 +157,7 @@ services:
   auth-service:
     build:
       context: ../auth-service
-    command: uvicorn src.auth_service.main:application --host 0.0.0.0 --port 8000 --reload
+    command: sh -c "poetry run alembic upgrade head && uvicorn src.auth_service.main:application --host 0.0.0.0 --port 8000 --reload"
     volumes:
       - ../auth-service/src:/auth-service/src
     networks:
