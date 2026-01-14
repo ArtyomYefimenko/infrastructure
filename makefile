@@ -54,6 +54,9 @@ init-env:
 run:
 	$(COMPOSE_CMD) -f docker-compose.yml up -d
 
+stop:
+	$(COMPOSE_CMD) -f docker-compose.yml down
+
 logs:
 	$(COMPOSE_CMD) -f docker-compose.yml logs -f --tail=100
 

@@ -15,7 +15,7 @@ This module contains Docker Compose configuration for running all Microshop serv
 - Git
 - Docker >= 24
 - Docker Compose >= 2.15
-- Make
+- GNU Make
 
 
 ## Setup
@@ -50,6 +50,14 @@ make build
 5. **Run the entire system:**
 ```bash
 make run
+```
+
+The Gateway Service will be available at:
+👉 http://localhost:8000/docs
+
+6. **Stop all services:**
+```bash
+make stop 
 ```
 
 ## Services Included
