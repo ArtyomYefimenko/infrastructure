@@ -36,11 +36,11 @@ cd infrastructure
 make fetch-services
 ```
 This will clone the following repositories next to the infrastructure folder:
-- product-service
-- order-service
-- payment-service
-- auth-service
-- gateway-service
+- [product-service](https://github.com/ArtyomYefimenko/product-service)
+- [order-service](https://github.com/ArtyomYefimenko/order-service)
+- [payment-service](https://github.com/ArtyomYefimenko/payment-service)
+- [auth-service](https://github.com/ArtyomYefimenko/auth-service)
+- [gateway-service](https://github.com/ArtyomYefimenko/gateway-service)
 
 4. **Build all Docker images:**
 ```bash
